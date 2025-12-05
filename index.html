@@ -10,11 +10,24 @@ body { font-family: Arial; background: #1f3b73; color: #fff; text-align: center;
 .container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 15px;}
 .card { background:#ffffff22; padding:15px; border-radius:12px; width:130px; }
 canvas { background: #ffffff11; border-radius: 10px; }
+button {
+  background:#00aaff; color:white; border:none; padding:8px 12px;
+  margin:4px; border-radius:6px; cursor:pointer;
+}
+button:hover { background:#0099dd; }
 </style>
 </head>
 
 <body>
 <h2>📡 Live Weather Dashboard — IST Time</h2>
+
+<p id="status" style="font-weight:bold; color:#ffa500;">Checking...</p>
+
+<div style="margin-bottom:10px;">
+  <button id="btnToday">Today</button>
+  <button id="btn24">Last 24 Hours</button>
+  <button id="btnAll">All Data</button>
+</div>
 
 <div class="container">
   <div class="card">🌡 Temp: <span id="temp">--</span>°C</div>
@@ -32,63 +45,124 @@ const tempEl = document.getElementById("temp");
 const humEl = document.getElementById("hum");
 const presEl = document.getElementById("pres");
 const luxEl = document.getElementById("lux");
+const statusEl = document.getElementById("status");
 
 let chart;
+let allData = [];
 
-// Convert timestamp UTC -> IST
-function toIST(utcString) {
-  const utc = new Date(utcString);
-  return new Date(utc.getTime() + (5.5 * 60 * 60 * 1000)); // Add 5:30 hr
+// ---------- Helpers for time handling ----------
+
+// gap in minutes between now (UTC) and given Date
+function timeGapMinutes(t){ return (Date.now() - t.getTime()) / 60000; }
+// gap in hours between now (UTC) and given Date
+function timeGapHours(t){ return (Date.now() - t.getTime()) / 3600000; }
+
+// convert a UTC Date to IST date parts (Y-M-D)
+function toISTDateParts(dateUtc) {
+  const ist = new Date(dateUtc.getTime() + 5.5 * 3600 * 1000);
+  return {
+    y: ist.getUTCFullYear(),
+    m: ist.getUTCMonth(),
+    d: ist.getUTCDate()
+  };
 }
+
+function isSameISTDay(d1, d2) {
+  const a = toISTDateParts(d1);
+  const b = toISTDateParts(d2);
+  return a.y === b.y && a.m === b.m && a.d === b.d;
+}
+
+// ---------- Fetch + view update ----------
 
 async function fetchWeather() {
   try {
     const res = await fetch(API_URL);
-    const data = await res.json();
-
-    const filtered = data
-      .filter(d => d.device === "weather-node-1" && d.temperature !== null)
-      .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-    if (filtered.length === 0) return;
-
-    const last = filtered[filtered.length - 1];
-
-    tempEl.innerText = last.temperature.toFixed(1);
-    humEl.innerText = last.humidity.toFixed(1);
-    presEl.innerText = last.pressure.toFixed(1);
-    luxEl.innerText = last.lux.toFixed(1);
-
-    updateChart(
-      filtered.map(d => toIST(d.timestamp).toLocaleTimeString("en-IN")),
-      filtered.map(d => d.temperature)
-    );
-
+    allData = await res.json();
+    updateView("all");
   } catch (e) {
-    console.error("Weather fetch error:", e);
+    console.error("❌ Error fetching:", e);
+    showNoData();
   }
 }
 
-function updateChart(labels, values) {
+function updateView(viewType) {
+  let filtered = allData.filter(d =>
+    d.device === "weather-node-1" && d.temperature !== null
+  );
+
+  // keep timestamps as proper Date objects (UTC internally)
+  filtered = filtered.map(d => ({
+    ...d,
+    ts: new Date(d.timestamp) // this parses "2025-12-05T16:46:22Z" as UTC
+  })).sort((a,b)=> a.ts - b.ts);
+
+  const latest = filtered[filtered.length - 1];
+
+  if (!latest || timeGapMinutes(latest.ts) > 10) {
+    showNoData();
+    return;
+  }
+
+  statusEl.innerText = "Live ✔";
+  statusEl.style.color = "#00ff88";
+
+  tempEl.innerText = latest.temperature.toFixed(1);
+  humEl.innerText = latest.humidity.toFixed(1);
+  presEl.innerText = latest.pressure.toFixed(1);
+  luxEl.innerText = latest.lux.toFixed(1);
+
+  // filters
+  if (viewType === "today") {
+    const nowUtc = new Date();
+    filtered = filtered.filter(d => isSameISTDay(d.ts, nowUtc));
+  }
+
+  if (viewType === "24h") {
+    filtered = filtered.filter(d => timeGapHours(d.ts) <= 24);
+  }
+
+  // labels in IST using toLocaleString with explicit timeZone
+  const labels = filtered.map(d =>
+    d.ts.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      hour12: true,
+      hour: "2-digit",
+      minute: "2-digit",
+      day: "2-digit",
+      month: "short"
+    })
+  );
+
+  const temps = filtered.map(d => d.temperature);
+
+  drawChart(labels, temps);
+}
+
+function showNoData() {
+  statusEl.innerText = "⚠ No Data Received";
+  statusEl.style.color = "yellow";
+  tempEl.innerText = humEl.innerText = presEl.innerText = luxEl.innerText = "0";
+  drawChart([], []);
+}
+
+// ---------- Chart ----------
+
+function drawChart(labels, values) {
   const ctx = document.getElementById("weatherChart");
   if (!chart) {
-    chart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [{
-          label: "Temperature °C",
-          data: values,
-          borderColor: "#00ffe1",
-          borderWidth: 2,
-          tension: 0.3
-        }]
-      },
-      options: {
-        plugins: { legend: { labels: { color: "#fff" } } },
-        scales: {
-          x: { ticks: { color: "#fff"} },
-          y: { ticks: { color: "#fff"} }
+    chart = new Chart(ctx,{
+      type:"line",
+      data:{ labels, datasets:[{
+        label:"Temp °C", data:values,
+        borderWidth:2, borderColor:"#00ffe1",
+        tension:0.3
+      }]},
+      options:{
+        plugins:{ legend:{ labels:{ color:"#fff" }}},
+        scales:{
+          x:{ ticks:{ color:"#fff" }},
+          y:{ ticks:{ color:"#fff" }}
         }
       }
     });
@@ -99,8 +173,14 @@ function updateChart(labels, values) {
   }
 }
 
+// ---------- Buttons + auto refresh ----------
+
+document.getElementById("btnToday").onclick = ()=>updateView("today");
+document.getElementById("btn24").onclick = ()=>updateView("24h");
+document.getElementById("btnAll").onclick = ()=>updateView("all");
+
 fetchWeather();
-setInterval(fetchWeather, 60000);
+setInterval(fetchWeather,60000);
 </script>
 
 </body>
