@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Weather Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family: Arial; background: #1f3b73; color: #fff; text-align: center; }
+.container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 15px;}
+.card { background:#ffffff22; padding:15px; border-radius:12px; width:130px; }
+canvas { background: #ffffff11; border-radius: 10px; }
+</style>
+</head>
+
+<body>
+<h2>📡 Live Weather Dashboard</h2>
+<div class="container">
+  <div class="card">🌡 Temp: <span id="temp">--</span>°C</div>
+  <div class="card">💧 Hum: <span id="hum">--</span>%</div>
+  <div class="card">⛈ Pres: <span id="pres">--</span></div>
+  <div class="card">💡 Lux: <span id="lux">--</span></div>
+</div>
+<canvas id="weatherChart" width="350" height="150"></canvas>
+
+<script>
+const API_URL = "https://7uxbhp38yk.execute-api.ap-south-1.amazonaws.com/v1/weather"\;
+let chart;
+async function fetchWeather(){
+try{
+const res = await fetch(API_URL);
+const data = await res.json();
+const last = data[data.length-1];
+temp.innerText=last.temperature.toFixed(1);
+hum.innerText=last.humidity.toFixed(1);
+pres.innerText=last.pressure.toFixed(1);
+lux.innerText=last.lux.toFixed(1);
+updateChart(data.map(d=>d.timestamp),data.map(d=>d.temperature));
+}catch(e){console.log(e);}
+}
+function updateChart(lbl,val){
+if(!chart){
+chart = new Chart(document.getElementById("weatherChart"),{
+type:"line",
+data:{labels:lbl,datasets:[{label:"Temp °C",data:val,borderWidth:2}]}
+});
+}else{chart.data.labels=lbl;chart.data.datasets[0].data=val;chart.update();}
+}
+fetchWeather();
+setInterval(fetchWeather,60000);
+</script>
+</body>
+</html>
