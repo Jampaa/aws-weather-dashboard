@@ -8,22 +8,22 @@
 <style>
 body { font-family: Arial; background: #1f3b73; color: #fff; text-align: center; }
 .container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 15px;}
-.card { background:#ffffff22; padding:15px; border-radius:12px; width:130px; font-size:18px; }
-canvas { background: #ffffff11; border-radius: 10px; margin-top:20px; }
+.card { background:#ffffff22; padding:15px; border-radius:12px; width:130px; }
+canvas { background: #ffffff11; border-radius: 10px; }
 </style>
 </head>
 
 <body>
-<h2>📡 Live Weather Dashboard</h2>
+<h2>📡 Live Weather Dashboard — IST Time</h2>
 
 <div class="container">
   <div class="card">🌡 Temp: <span id="temp">--</span>°C</div>
   <div class="card">💧 Hum: <span id="hum">--</span>%</div>
   <div class="card">⛈ Pres: <span id="pres">--</span></div>
-  <div class="card">💡 Lux: <span id="lux">--</span></</div>
+  <div class="card">💡 Lux: <span id="lux">--</span></div>
 </div>
 
-<canvas id="weatherChart" width="350" height="180"></canvas>
+<canvas id="weatherChart" width="350" height="150"></canvas>
 
 <script>
 const API_URL = "https://7uxbhp38yk.execute-api.ap-south-1.amazonaws.com/v1/weather";
@@ -35,11 +35,16 @@ const luxEl = document.getElementById("lux");
 
 let chart;
 
+// Convert timestamp UTC -> IST
+function toIST(utcString) {
+  const utc = new Date(utcString);
+  return new Date(utc.getTime() + (5.5 * 60 * 60 * 1000)); // Add 5:30 hr
+}
+
 async function fetchWeather() {
   try {
     const res = await fetch(API_URL);
     const data = await res.json();
-    console.log("Fetched Data:", data);
 
     const filtered = data
       .filter(d => d.device === "weather-node-1" && d.temperature !== null)
@@ -49,13 +54,13 @@ async function fetchWeather() {
 
     const last = filtered[filtered.length - 1];
 
-    tempEl.innerText = last.temperature?.toFixed(1) ?? "--";
-    humEl.innerText = last.humidity?.toFixed(1) ?? "--";
-    presEl.innerText = last.pressure?.toFixed(1) ?? "--";
-    luxEl.innerText = last.lux?.toFixed(1) ?? "--";
+    tempEl.innerText = last.temperature.toFixed(1);
+    humEl.innerText = last.humidity.toFixed(1);
+    presEl.innerText = last.pressure.toFixed(1);
+    luxEl.innerText = last.lux.toFixed(1);
 
     updateChart(
-      filtered.map(d => new Date(d.timestamp).toLocaleTimeString()),
+      filtered.map(d => toIST(d.timestamp).toLocaleTimeString("en-IN")),
       filtered.map(d => d.temperature)
     );
 
@@ -66,7 +71,6 @@ async function fetchWeather() {
 
 function updateChart(labels, values) {
   const ctx = document.getElementById("weatherChart");
-
   if (!chart) {
     chart = new Chart(ctx, {
       type: "line",
@@ -83,8 +87,8 @@ function updateChart(labels, values) {
       options: {
         plugins: { legend: { labels: { color: "#fff" } } },
         scales: {
-          x: { ticks: { color: "#fff" } },
-          y: { ticks: { color: "#fff" } }
+          x: { ticks: { color: "#fff"} },
+          y: { ticks: { color: "#fff"} }
         }
       }
     });
