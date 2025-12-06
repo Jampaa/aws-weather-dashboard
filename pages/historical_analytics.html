@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Historical weather analytics dashboard with comprehensive trend visualization and comparative data analysis for meteorological research">
+    <title>Historical Analytics - Weather Data Trends & Patterns</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fweatheran9927back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.10"></script>
+  <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.1"></script>
+  </head>
+<body class="min-h-screen">
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        
+        <!-- Header Section -->
+        <header class="glass-elevated rounded-xl p-6 mb-6 animate-fade-in">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <!-- Logo and Title -->
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-accent flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-background" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl lg:text-3xl font-heading font-bold gradient-text">Historical Analytics</h1>
+                        <p class="text-text-secondary text-sm font-caption">Comprehensive Trend Analysis & Insights</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <nav class="flex flex-wrap gap-3" role="navigation" aria-label="Main navigation">
+                    <a href="weather_monitoring_hub.html" class="btn-glass px-4 py-2 text-sm font-medium hover:border-b-2 hover:border-accent transition-all">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                        </svg>
+                        Live Hub
+                    </a>
+                    <a href="historical_analytics.html" class="btn-glass px-4 py-2 text-sm font-medium border-b-2 border-primary" aria-current="page">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Analytics
+                    </a>
+                    <a href="system_status_monitor.html" class="btn-glass px-4 py-2 text-sm font-medium hover:border-b-2 hover:border-accent transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        System Status
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Control Bar -->
+        <div class="glass rounded-xl p-4 mb-6 animate-slide-up" style="animation-delay: 100ms;">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Date Range Picker -->
+                <div class="flex flex-col gap-2">
+                    <label for="dateRange" class="text-sm font-caption text-text-secondary">Date Range</label>
+                    <select id="dateRange" class="glass rounded-md px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary transition-all">
+                        <option value="week">Last Week</option>
+                        <option value="month" selected>Last Month</option>
+                        <option value="quarter">Last Quarter</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+
+                <!-- Device Selector -->
+                <div class="flex flex-col gap-2">
+                    <label for="deviceSelector" class="text-sm font-caption text-text-secondary">Device Node</label>
+                    <select id="deviceSelector" class="glass rounded-md px-4 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary transition-all">
+                        <option value="all">All Devices</option>
+                        <option value="node-1" selected>weather-node-1</option>
+                        <option value="node-2">weather-node-2</option>
+                        <option value="node-3">weather-node-3</option>
+                    </select>
+                </div>
+
+                <!-- Data Processing Status -->
+                <div class="flex items-end">
+                    <div class="flex items-center gap-3 w-full">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-success animate-pulse" id="processingDot"></div>
+                            <span class="text-sm font-medium" id="processingText">Data Ready</span>
+                        </div>
+                        <div class="text-xs text-text-tertiary font-data" id="dataPoints">2,880 points</div>
+                    </div>
+                </div>
+
+                <!-- Export Controls -->
+                <div class="flex items-end gap-2">
+                    <button class="btn-glass px-4 py-2 text-sm font-medium flex-1 hover:border hover:border-primary transition-all" id="exportCSV" aria-label="Export data as CSV">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        CSV
+                    </button>
+                    <button class="btn-glass px-4 py-2 text-sm font-medium flex-1 hover:border hover:border-secondary transition-all" id="exportPDF" aria-label="Export report as PDF">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistical Summary Strip -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <!-- Temperature Statistics -->
+            <div class="metric-card status-success animate-scale-in interactive" style="animation-delay: 150ms;" id="tempStats">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="metric-label">Temperature Range</p>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-xl font-data text-primary" id="tempMin">18.2°C</span>
+                            <span class="text-text-tertiary">to</span>
+                            <span class="text-xl font-data text-secondary" id="tempMax">32.8°C</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-sm text-text-secondary font-caption">Avg:</span>
+                            <span class="text-base font-data" id="tempAvg">25.4°C</span>
+                            <span class="text-xs text-success flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                +2.3%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Humidity Statistics -->
+            <div class="metric-card status-success animate-scale-in interactive" style="animation-delay: 200ms;" id="humidityStats">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="metric-label">Humidity Range</p>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-xl font-data text-primary" id="humidityMin">42%</span>
+                            <span class="text-text-tertiary">to</span>
+                            <span class="text-xl font-data text-secondary" id="humidityMax">78%</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-sm text-text-secondary font-caption">Avg:</span>
+                            <span class="text-base font-data" id="humidityAvg">58.6%</span>
+                            <span class="text-xs text-error flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                -1.8%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-secondary/20 to-warning/20 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pressure Statistics -->
+            <div class="metric-card status-success animate-scale-in interactive" style="animation-delay: 250ms;" id="pressureStats">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="metric-label">Pressure Range</p>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-lg font-data text-primary" id="pressureMin">1008</span>
+                            <span class="text-text-tertiary">to</span>
+                            <span class="text-lg font-data text-secondary" id="pressureMax">1024</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-sm text-text-secondary font-caption">Avg:</span>
+                            <span class="text-base font-data" id="pressureAvg">1015.2 hPa</span>
+                            <span class="text-xs text-success flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                +0.5%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Light Intensity Statistics -->
+            <div class="metric-card status-success animate-scale-in interactive" style="animation-delay: 300ms;" id="luxStats">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="metric-label">Light Range</p>
+                        <div class="flex items-baseline gap-2 mt-1">
+                            <span class="text-lg font-data text-primary" id="luxMin">120</span>
+                            <span class="text-text-tertiary">to</span>
+                            <span class="text-lg font-data text-secondary" id="luxMax">980</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-sm text-text-secondary font-caption">Avg:</span>
+                            <span class="text-base font-data" id="luxAvg">542 lux</span>
+                            <span class="text-xs text-success flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                                </svg>
+                                +4.2%
+                            </span>
+                        </div>
+                    </div>
+                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-warning/20 to-secondary/20 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+            <!-- Multi-Line Trend Chart (8 columns) -->
+            <div class="lg:col-span-8 card-elevated animate-slide-up" style="animation-delay: 350ms;">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-xl font-heading font-semibold">Comparative Trend Analysis</h2>
+                        <p class="text-sm text-text-secondary font-caption mt-1">Multi-parameter correlation view</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2" role="group" aria-label="Chart legend controls">
+                        <button class="btn-glass px-3 py-1.5 text-xs font-medium border border-primary legend-toggle active" data-dataset="0" aria-pressed="true">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-primary"></div>
+                                Temperature
+                            </div>
+                        </button>
+                        <button class="btn-glass px-3 py-1.5 text-xs font-medium border border-secondary legend-toggle active" data-dataset="1" aria-pressed="true">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-secondary"></div>
+                                Humidity
+                            </div>
+                        </button>
+                        <button class="btn-glass px-3 py-1.5 text-xs font-medium border border-accent legend-toggle active" data-dataset="2" aria-pressed="true">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-accent"></div>
+                                Pressure
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <div class="relative h-80 lg:h-96">
+                    <canvas id="comparativeChart" role="img" aria-label="Multi-line chart comparing temperature, humidity, and pressure trends over selected time period"></canvas>
+                </div>
+            </div>
+
+            <!-- Data Summary Sidebar (4 columns) -->
+            <div class="lg:col-span-4 card-elevated animate-slide-up" style="animation-delay: 400ms;">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-heading font-semibold">Statistical Summary</h2>
+                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+
+                <!-- Statistical Data Table -->
+                <div class="space-y-4">
+                    <!-- Standard Deviation -->
+                    <div class="glass-subtle rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-caption text-text-secondary">Standard Deviation</span>
+                            <svg class="w-4 h-4 text-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Temperature</span>
+                                <span class="text-sm font-data">±3.2°C</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Humidity</span>
+                                <span class="text-sm font-data">±8.4%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Pressure</span>
+                                <span class="text-sm font-data">±4.1 hPa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Correlation Analysis -->
+                    <div class="glass-subtle rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-caption text-text-secondary">Correlation Insights</span>
+                            <svg class="w-4 h-4 text-success" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Temp-Humidity</span>
+                                <span class="text-sm font-data text-error">-0.72</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Temp-Pressure</span>
+                                <span class="text-sm font-data text-success">+0.45</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Humidity-Pressure</span>
+                                <span class="text-sm font-data text-error">-0.38</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Data Quality Metrics -->
+                    <div class="glass-subtle rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-caption text-text-secondary">Data Quality</span>
+                            <span class="text-xs px-2 py-1 rounded-full bg-success/20 text-success font-medium">Excellent</span>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Completeness</span>
+                                <span class="text-sm font-data">99.8%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Accuracy</span>
+                                <span class="text-sm font-data">98.5%</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Missing Points</span>
+                                <span class="text-sm font-data">6 / 2,880</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Peak Activity Times -->
+                    <div class="glass-subtle rounded-lg p-3">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-caption text-text-secondary">Peak Activity</span>
+                            <svg class="w-4 h-4 text-warning" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Highest Temp</span>
+                                <span class="text-sm font-data">14:30 IST</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Lowest Temp</span>
+                                <span class="text-sm font-data">05:15 IST</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-text-tertiary">Peak Humidity</span>
+                                <span class="text-sm font-data">06:45 IST</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hourly Heatmap Visualization -->
+        <div class="card-elevated animate-slide-up" style="animation-delay: 450ms;">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+                <div>
+                    <h2 class="text-xl font-heading font-semibold">Hourly Pattern Heatmap</h2>
+                    <p class="text-sm text-text-secondary font-caption mt-1">Color-coded intensity mapping across time periods</p>
+                </div>
+                <div class="flex gap-2" role="group" aria-label="Heatmap parameter selector">
+                    <button class="btn-glass px-3 py-1.5 text-xs font-medium border-2 border-primary heatmap-toggle active" data-metric="temperature" aria-pressed="true">
+                        Temperature
+                    </button>
+                    <button class="btn-glass px-3 py-1.5 text-xs font-medium heatmap-toggle" data-metric="humidity" aria-pressed="false">
+                        Humidity
+                    </button>
+                    <button class="btn-glass px-3 py-1.5 text-xs font-medium heatmap-toggle" data-metric="lux" aria-pressed="false">
+                        Light
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Heatmap Canvas -->
+            <div class="relative overflow-x-auto scrollbar-thin">
+                <div class="min-w-[800px]">
+                    <div class="relative h-64 lg:h-80">
+                        <canvas id="heatmapChart" role="img" aria-label="Heatmap visualization showing hourly patterns of selected environmental parameter"></canvas>
+                    </div>
+                    
+                    <!-- Color Scale Legend -->
+                    <div class="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-border">
+                        <span class="text-xs text-text-secondary font-caption">Low</span>
+                        <div class="flex gap-1">
+                            <div class="w-8 h-4 rounded-sm" style="background: rgba(0, 255, 225, 0.2);"></div>
+                            <div class="w-8 h-4 rounded-sm" style="background: rgba(0, 255, 225, 0.4);"></div>
+                            <div class="w-8 h-4 rounded-sm" style="background: rgba(0, 255, 225, 0.6);"></div>
+                            <div class="w-8 h-4 rounded-sm" style="background: rgba(0, 255, 225, 0.8);"></div>
+                            <div class="w-8 h-4 rounded-sm" style="background: rgba(255, 170, 0, 0.4);"></div>
+                            <div class="w-8 h-4 rounded-sm" style="background: rgba(255, 170, 0, 0.6);"></div>
+                            <div class="w-8 h-4 rounded-sm" style="background: rgba(255, 170, 0, 0.8);"></div>
+                            <div class="w-8 h-4 rounded-sm" style="background: rgba(255, 170, 0, 1);"></div>
+                        </div>
+                        <span class="text-xs text-text-secondary font-caption">High</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="glass rounded-xl p-6 mt-6 text-center animate-fade-in" style="animation-delay: 500ms;">
+            <p class="text-sm text-text-secondary font-caption">
+                © 2025 Weather Analytics Dashboard. Historical Data Analysis & Trend Visualization System.
+            </p>
+            <p class="text-xs text-text-tertiary mt-2 font-caption">
+                Analysis Period: Last 30 Days | Data Points: 2,880 | Timezone: IST | Generated: 06 Dec 2025
+            </p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Configuration
+        const MOCK_DATA_POINTS = 720; // 30 days * 24 hours
+        let historicalData = [];
+        let comparativeChart = null;
+        let heatmapChart = null;
+        let currentHeatmapMetric = 'temperature';
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            generateHistoricalData();
+            initializeCharts();
+            setupEventListeners();
+            updateStatistics();
+        });
+
+        // Generate Historical Mock Data
+        function generateHistoricalData() {
+            const now = new Date();
+            historicalData = [];
+            
+            for (let i = MOCK_DATA_POINTS - 1; i >= 0; i--) {
+                const timestamp = new Date(now - i * 3600000);
+                const hour = timestamp.getHours();
+                
+                // Simulate realistic daily patterns
+                const tempBase = 25;
+                const tempVariation = Math.sin((hour - 6) * Math.PI / 12) * 7;
+                const tempNoise = (Math.random() - 0.5) * 3;
+                
+                const humidityBase = 60;
+                const humidityVariation = -Math.sin((hour - 6) * Math.PI / 12) * 20;
+                const humidityNoise = (Math.random() - 0.5) * 8;
+                
+                const pressureBase = 1015;
+                const pressureVariation = Math.sin(i * Math.PI / 360) * 8;
+                const pressureNoise = (Math.random() - 0.5) * 2;
+                
+                const luxBase = 500;
+                const luxVariation = hour >= 6 && hour <= 18 ? Math.sin((hour - 6) * Math.PI / 12) * 400 : 0;
+                const luxNoise = Math.random() * 100;
+                
+                historicalData.push({
+                    timestamp: timestamp.toISOString(),
+                    temperature: Math.max(15, Math.min(35, tempBase + tempVariation + tempNoise)).toFixed(1),
+                    humidity: Math.max(30, Math.min(90, humidityBase + humidityVariation + humidityNoise)).toFixed(1),
+                    pressure: Math.max(1000, Math.min(1030, pressureBase + pressureVariation + pressureNoise)).toFixed(1),
+                    lux: Math.max(50, Math.floor(luxBase + luxVariation + luxNoise))
+                });
+            }
+        }
+
+        // Update Statistics
+        function updateStatistics() {
+            const temps = historicalData.map(d => parseFloat(d.temperature));
+            const humidities = historicalData.map(d => parseFloat(d.humidity));
+            const pressures = historicalData.map(d => parseFloat(d.pressure));
+            const luxValues = historicalData.map(d => parseInt(d.lux));
+            
+            // Temperature Stats
+            document.getElementById('tempMin').textContent = `${Math.min(...temps).toFixed(1)}°C`;
+            document.getElementById('tempMax').textContent = `${Math.max(...temps).toFixed(1)}°C`;
+            document.getElementById('tempAvg').textContent = `${(temps.reduce((a, b) => a + b) / temps.length).toFixed(1)}°C`;
+            
+            // Humidity Stats
+            document.getElementById('humidityMin').textContent = `${Math.min(...humidities).toFixed(0)}%`;
+            document.getElementById('humidityMax').textContent = `${Math.max(...humidities).toFixed(0)}%`;
+            document.getElementById('humidityAvg').textContent = `${(humidities.reduce((a, b) => a + b) / humidities.length).toFixed(1)}%`;
+            
+            // Pressure Stats
+            document.getElementById('pressureMin').textContent = Math.min(...pressures).toFixed(0);
+            document.getElementById('pressureMax').textContent = Math.max(...pressures).toFixed(0);
+            document.getElementById('pressureAvg').textContent = `${(pressures.reduce((a, b) => a + b) / pressures.length).toFixed(1)} hPa`;
+            
+            // Lux Stats
+            document.getElementById('luxMin').textContent = Math.min(...luxValues);
+            document.getElementById('luxMax').textContent = Math.max(...luxValues);
+            document.getElementById('luxAvg').textContent = `${Math.floor(luxValues.reduce((a, b) => a + b) / luxValues.length)} lux`;
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            initializeComparativeChart();
+            initializeHeatmapChart();
+        }
+
+        // Initialize Comparative Chart
+        function initializeComparativeChart() {
+            const ctx = document.getElementById('comparativeChart').getContext('2d');
+            
+            // Sample every 6th data point for better visualization (4 points per day)
+            const sampledData = historicalData.filter((_, index) => index % 6 === 0);
+            
+            const labels = sampledData.map(d => {
+                const date = new Date(d.timestamp);
+                return date.toLocaleDateString('en-IN', { 
+                    day: '2-digit',
+                    month: 'short'
+                });
+            });
+            
+            comparativeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Temperature (°C)',
+                            data: sampledData.map(d => parseFloat(d.temperature)),
+                            borderColor: '#00ffe1',
+                            backgroundColor: 'rgba(0, 255, 225, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y',
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: '#00ffe1',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 1
+                        },
+                        {
+                            label: 'Humidity (%)',
+                            data: sampledData.map(d => parseFloat(d.humidity)),
+                            borderColor: '#ffaa00',
+                            backgroundColor: 'rgba(255, 170, 0, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y1',
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: '#ffaa00',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 1
+                        },
+                        {
+                            label: 'Pressure (hPa)',
+                            data: sampledData.map(d => parseFloat(d.pressure)),
+                            borderColor: '#64ffda',
+                            backgroundColor: 'rgba(100, 255, 218, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true,
+                            yAxisID: 'y2',
+                            pointRadius: 2,
+                            pointHoverRadius: 5,
+                            pointBackgroundColor: '#64ffda',
+                            pointBorderColor: '#ffffff',
+                            pointBorderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 32, 39, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#00ffe1',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += context.parsed.y.toFixed(1);
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 10
+                                },
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)',
+                                color: '#00ffe1',
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#00ffe1',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 10
+                                }
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: 'Humidity (%)',
+                                color: '#ffaa00',
+                                font: {
+                                    family: 'Inter',
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: '#ffaa00',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 10
+                                }
+                            }
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: false,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false,
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize Heatmap Chart
+        function initializeHeatmapChart() {
+            const ctx = document.getElementById('heatmapChart').getContext('2d');
+            
+            // Group data by day and hour
+            const heatmapData = generateHeatmapData('temperature');
+            
+            heatmapChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Array.from({length: 24}, (_, i) => `${i.toString().padStart(2, '0')}:00`),
+                    datasets: heatmapData.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 32, 39, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#00ffe1',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                title: function(context) {
+                                    return `${context[0].label} - Day ${context[0].datasetIndex + 1}`;
+                                },
+                                label: function(context) {
+                                    return `Value: ${context.parsed.y.toFixed(1)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 10
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'JetBrains Mono',
+                                    size: 10
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Generate Heatmap Data
+        function generateHeatmapData(metric) {
+            const days = 7; // Show last 7 days
+            const datasets = [];
+            
+            for (let day = 0; day < days; day++) {
+                const dayData = [];
+                const startIndex = (days - day - 1) * 24;
+                
+                for (let hour = 0; hour < 24; hour++) {
+                    const dataIndex = startIndex + hour;
+                    if (dataIndex < historicalData.length) {
+                        const value = parseFloat(historicalData[dataIndex][metric]);
+                        dayData.push(value);
+                    } else {
+                        dayData.push(null);
+                    }
+                }
+                
+                // Calculate color intensity based on values
+                const maxValue = Math.max(...dayData.filter(v => v !== null));
+                const minValue = Math.min(...dayData.filter(v => v !== null));
+                const range = maxValue - minValue;
+                
+                const backgroundColor = dayData.map(value => {
+                    if (value === null) return 'rgba(255, 255, 255, 0.05)';
+                    const intensity = (value - minValue) / range;
+                    if (intensity < 0.5) {
+                        return `rgba(0, 255, 225, ${0.2 + intensity * 0.6})`;
+                    } else {
+                        return `rgba(255, 170, 0, ${(intensity - 0.5) * 2 * 0.8 + 0.2})`;
+                    }
+                });
+                
+                datasets.push({
+                    label: `Day ${day + 1}`,
+                    data: dayData,
+                    backgroundColor: backgroundColor,
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1,
+                    barThickness: 'flex',
+                    maxBarThickness: 40
+                });
+            }
+            
+            return { datasets };
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Legend Toggle Buttons
+            const legendToggles = document.querySelectorAll('.legend-toggle');
+            legendToggles.forEach(button => {
+                button.addEventListener('click', () => {
+                    const datasetIndex = parseInt(button.dataset.dataset);
+                    const isActive = button.classList.contains('active');
+                    
+                    if (isActive) {
+                        button.classList.remove('active', 'border-primary', 'border-secondary', 'border-accent');
+                        button.setAttribute('aria-pressed', 'false');
+                        comparativeChart.setDatasetVisibility(datasetIndex, false);
+                    } else {
+                        button.classList.add('active');
+                        button.setAttribute('aria-pressed', 'true');
+                        if (datasetIndex === 0) button.classList.add('border-primary');
+                        if (datasetIndex === 1) button.classList.add('border-secondary');
+                        if (datasetIndex === 2) button.classList.add('border-accent');
+                        comparativeChart.setDatasetVisibility(datasetIndex, true);
+                    }
+                    
+                    comparativeChart.update();
+                });
+            });
+
+            // Heatmap Toggle Buttons
+            const heatmapToggles = document.querySelectorAll('.heatmap-toggle');
+            heatmapToggles.forEach(button => {
+                button.addEventListener('click', () => {
+                    heatmapToggles.forEach(btn => {
+                        btn.classList.remove('border-2', 'border-primary', 'active');
+                        btn.setAttribute('aria-pressed', 'false');
+                    });
+                    
+                    button.classList.add('border-2', 'border-primary', 'active');
+                    button.setAttribute('aria-pressed', 'true');
+                    currentHeatmapMetric = button.dataset.metric;
+                    
+                    updateHeatmap();
+                });
+            });
+
+            // Export Buttons
+            document.getElementById('exportCSV').addEventListener('click', () => {
+                exportToCSV();
+            });
+
+            document.getElementById('exportPDF').addEventListener('click', () => {
+                alert('PDF export functionality would generate a comprehensive report with all charts and statistics.');
+            });
+
+            // Date Range Selector
+            document.getElementById('dateRange').addEventListener('change', (e) => {
+                console.log('Date range changed to:', e.target.value);
+                // In production, this would trigger data refetch
+            });
+
+            // Device Selector
+            document.getElementById('deviceSelector').addEventListener('change', (e) => {
+                console.log('Device changed to:', e.target.value);
+                // In production, this would filter data by device
+            });
+        }
+
+        // Update Heatmap
+        function updateHeatmap() {
+            const newData = generateHeatmapData(currentHeatmapMetric);
+            heatmapChart.data.datasets = newData.datasets;
+            heatmapChart.update();
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            let csv = 'Timestamp,Temperature (°C),Humidity (%),Pressure (hPa),Light (lux)\n';
+            
+            historicalData.forEach(row => {
+                const date = new Date(row.timestamp);
+                const formattedDate = date.toLocaleString('en-IN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                csv += `${formattedDate},${row.temperature},${row.humidity},${row.pressure},${row.lux}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `weather-analytics-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Comprehensive IoT sensor network health monitoring with real-time connectivity status and data quality assurance">
+    <title>System Status Monitor - IoT Network Health Dashboard</title>
+    <link rel="stylesheet" href="../css/main.css">
+  <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fweatheran9927back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.10"></script>
+  <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.1"></script>
+  </head>
+<body class="min-h-screen">
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        
+        <!-- Header Section -->
+        <header class="glass-elevated rounded-xl p-6 mb-6 animate-fade-in">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <!-- Logo and Title -->
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-accent flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-background" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl lg:text-3xl font-heading font-bold gradient-text">System Status Monitor</h1>
+                        <p class="text-text-secondary text-sm font-caption">IoT Network Health Dashboard</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <nav class="flex flex-wrap gap-3" role="navigation" aria-label="Main navigation">
+                    <a href="weather_monitoring_hub.html" class="btn-glass px-4 py-2 text-sm font-medium hover:border-b-2 hover:border-accent transition-all">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                        </svg>
+                        Live Hub
+                    </a>
+                    <a href="historical_analytics.html" class="btn-glass px-4 py-2 text-sm font-medium hover:border-b-2 hover:border-accent transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Analytics
+                    </a>
+                    <a href="system_status_monitor.html" class="btn-glass px-4 py-2 text-sm font-medium border-b-2 border-primary" aria-current="page">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        System Status
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- System Health Overview Bar -->
+        <div class="glass rounded-xl p-6 mb-6 animate-slide-up" style="animation-delay: 100ms;">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Overall Health Score -->
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-success/30 to-success/10 flex items-center justify-center relative">
+                        <svg class="w-8 h-8 text-success animate-pulse-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div class="absolute inset-0 rounded-full border-4 border-success opacity-20 animate-ping"></div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-caption text-text-secondary uppercase tracking-wide">System Health</p>
+                        <p class="text-3xl font-heading font-bold text-success" id="healthScore">98.7%</p>
+                        <p class="text-xs text-text-tertiary font-caption mt-1">Excellent</p>
+                    </div>
+                </div>
+
+                <!-- Active Devices -->
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-caption text-text-secondary uppercase tracking-wide">Active Devices</p>
+                        <p class="text-3xl font-heading font-bold" id="activeDevices">3 / 3</p>
+                        <p class="text-xs text-text-tertiary font-caption mt-1">All Online</p>
+                    </div>
+                </div>
+
+                <!-- Network Status -->
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-accent/30 to-accent/10 flex items-center justify-center relative">
+                        <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+                        </svg>
+                        <div class="absolute top-0 right-0 w-3 h-3 bg-success rounded-full animate-pulse"></div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-caption text-text-secondary uppercase tracking-wide">Network Status</p>
+                        <p class="text-3xl font-heading font-bold text-success" id="networkStatus">Connected</p>
+                        <p class="text-xs text-text-tertiary font-caption mt-1" id="networkLatency">Latency: 42ms</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Device Status Cards -->
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-heading font-semibold">Device Status</h2>
+                <button class="btn-glass px-4 py-2 text-sm font-medium interactive" id="refreshDevices" aria-label="Refresh device status">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Weather Node 1 -->
+                <div class="card-elevated status-live animate-scale-in" style="animation-delay: 150ms;">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-heading font-semibold">weather-node-1</h3>
+                                <p class="text-xs text-text-secondary font-caption">Primary Sensor</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                            <span class="text-xs font-medium text-success">Online</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Health Metrics -->
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Health Score</span>
+                            <span class="text-sm font-data font-semibold text-success">99.2%</span>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Signal Strength</span>
+                            <div class="flex items-center gap-2">
+                                <div class="flex gap-1">
+                                    <div class="w-1 h-3 bg-success rounded-full"></div>
+                                    <div class="w-1 h-4 bg-success rounded-full"></div>
+                                    <div class="w-1 h-5 bg-success rounded-full"></div>
+                                    <div class="w-1 h-6 bg-success rounded-full"></div>
+                                </div>
+                                <span class="text-sm font-data font-semibold">-45 dBm</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Last Communication</span>
+                            <span class="text-sm font-data">12 seconds ago</span>
+                        </div>
+                        <div class="flex items-center justify-between py-2">
+                            <span class="text-sm text-text-secondary font-caption">Data Quality</span>
+                            <span class="text-sm font-data font-semibold text-success">Excellent</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <button class="w-full btn-glass py-2 text-sm font-medium interactive">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Device Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Weather Node 2 -->
+                <div class="card-elevated status-live animate-scale-in" style="animation-delay: 200ms;">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-secondary/20 to-warning/20 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-heading font-semibold">weather-node-2</h3>
+                                <p class="text-xs text-text-secondary font-caption">Secondary Sensor</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                            <span class="text-xs font-medium text-success">Online</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Health Score</span>
+                            <span class="text-sm font-data font-semibold text-success">97.8%</span>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Signal Strength</span>
+                            <div class="flex items-center gap-2">
+                                <div class="flex gap-1">
+                                    <div class="w-1 h-3 bg-success rounded-full"></div>
+                                    <div class="w-1 h-4 bg-success rounded-full"></div>
+                                    <div class="w-1 h-5 bg-success rounded-full"></div>
+                                    <div class="w-1 h-6 bg-surface rounded-full"></div>
+                                </div>
+                                <span class="text-sm font-data font-semibold">-58 dBm</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Last Communication</span>
+                            <span class="text-sm font-data">28 seconds ago</span>
+                        </div>
+                        <div class="flex items-center justify-between py-2">
+                            <span class="text-sm text-text-secondary font-caption">Data Quality</span>
+                            <span class="text-sm font-data font-semibold text-success">Good</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <button class="w-full btn-glass py-2 text-sm font-medium interactive">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Device Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Weather Node 3 -->
+                <div class="card-elevated status-live animate-scale-in" style="animation-delay: 250ms;">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
+                                <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-heading font-semibold">weather-node-3</h3>
+                                <p class="text-xs text-text-secondary font-caption">Backup Sensor</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-success animate-pulse"></div>
+                            <span class="text-xs font-medium text-success">Online</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Health Score</span>
+                            <span class="text-sm font-data font-semibold text-success">98.5%</span>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Signal Strength</span>
+                            <div class="flex items-center gap-2">
+                                <div class="flex gap-1">
+                                    <div class="w-1 h-3 bg-success rounded-full"></div>
+                                    <div class="w-1 h-4 bg-success rounded-full"></div>
+                                    <div class="w-1 h-5 bg-success rounded-full"></div>
+                                    <div class="w-1 h-6 bg-success rounded-full"></div>
+                                </div>
+                                <span class="text-sm font-data font-semibold">-48 dBm</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between py-2 border-b border-border">
+                            <span class="text-sm text-text-secondary font-caption">Last Communication</span>
+                            <span class="text-sm font-data">18 seconds ago</span>
+                        </div>
+                        <div class="flex items-center justify-between py-2">
+                            <span class="text-sm text-text-secondary font-caption">Data Quality</span>
+                            <span class="text-sm font-data font-semibold text-success">Excellent</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-border">
+                        <button class="w-full btn-glass py-2 text-sm font-medium interactive">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Device Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API & Network Monitoring -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- API Connectivity Status -->
+            <div class="card-elevated animate-slide-up" style="animation-delay: 300ms;">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-heading font-semibold">API Connectivity</h2>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-success animate-pulse"></div>
+                        <span class="text-sm text-success font-medium">Active</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- AWS Gateway -->
+                    <div class="glass rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">AWS API Gateway</p>
+                                    <p class="text-xs text-text-secondary font-caption">ap-south-1</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-data px-2 py-1 rounded-full bg-success/20 text-success">Connected</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <p class="text-text-secondary font-caption">Response Time</p>
+                                <p class="font-data font-semibold">142ms</p>
+                            </div>
+                            <div>
+                                <p class="text-text-secondary font-caption">Success Rate</p>
+                                <p class="font-data font-semibold text-success">99.8%</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Geolocation API -->
+                    <div class="glass rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-secondary/20 to-warning/20 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-secondary" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">BigDataCloud API</p>
+                                    <p class="text-xs text-text-secondary font-caption">Reverse Geocoding</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-data px-2 py-1 rounded-full bg-success/20 text-success">Active</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div>
+                                <p class="text-text-secondary font-caption">GPS Accuracy</p>
+                                <p class="font-data font-semibold">±5m</p>
+                            </div>
+                            <div>
+                                <p class="text-text-secondary font-caption">API Calls</p>
+                                <p class="font-data font-semibold">1,247</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Test Connection Button -->
+                    <button class="w-full btn-glass py-3 text-sm font-medium interactive">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        Test All Connections
+                    </button>
+                </div>
+            </div>
+
+            <!-- Data Transmission Metrics -->
+            <div class="card-elevated animate-slide-up" style="animation-delay: 350ms;">
+                <h2 class="text-xl font-heading font-semibold mb-4">Data Transmission</h2>
+                
+                <div class="space-y-4">
+                    <!-- Transmission Rate -->
+                    <div class="glass rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-text-secondary font-caption">Transmission Rate</span>
+                            <span class="text-sm font-data font-semibold">3.2 KB/s</span>
+                        </div>
+                        <div class="w-full h-2 bg-surface rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-accent rounded-full" style="width: 78%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Data Points Received -->
+                    <div class="glass rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-text-secondary font-caption">Data Points (24h)</span>
+                            <span class="text-sm font-data font-semibold">8,640</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-3">
+                            <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                            <span class="text-xs text-success font-medium">+12.5% from yesterday</span>
+                        </div>
+                    </div>
+
+                    <!-- Error Frequency -->
+                    <div class="glass rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm text-text-secondary font-caption">Error Frequency</span>
+                            <span class="text-sm font-data font-semibold text-success">0.02%</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-3">
+                            <svg class="w-4 h-4 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span class="text-xs text-success font-medium">Within acceptable range</span>
+                        </div>
+                    </div>
+
+                    <!-- WebSocket Status -->
+                    <div class="glass rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center relative">
+                                    <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-success rounded-full animate-pulse"></div>
+                                </div>
+                                <div>
+                                    <p class="font-medium">WebSocket</p>
+                                    <p class="text-xs text-text-secondary font-caption">Real-time Updates</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-data px-2 py-1 rounded-full bg-success/20 text-success">Live</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Management -->
+        <div class="card-elevated mb-6 animate-slide-up" style="animation-delay: 400ms;">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-heading font-semibold">System Alerts</h2>
+                <button class="btn-glass px-4 py-2 text-sm font-medium interactive">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                    </svg>
+                    Configure Alerts
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <!-- Success Alert -->
+                <div class="glass rounded-lg p-4 border-l-4 border-success">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-success/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="font-medium">All Systems Operational</h3>
+                                <span class="text-xs text-text-tertiary font-caption font-data">2 min ago</span>
+                            </div>
+                            <p class="text-sm text-text-secondary">All sensors reporting normally. Network connectivity stable.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Alert -->
+                <div class="glass rounded-lg p-4 border-l-4 border-primary">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="font-medium">Scheduled Maintenance</h3>
+                                <span class="text-xs text-text-tertiary font-caption font-data">1 hour ago</span>
+                            </div>
+                            <p class="text-sm text-text-secondary">System maintenance scheduled for Dec 8, 2025 at 02:00 AM IST.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Warning Alert (Resolved) -->
+                <div class="glass rounded-lg p-4 border-l-4 border-surface opacity-60">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-warning/20 flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="font-medium">Minor Latency Spike - Resolved</h3>
+                                <span class="text-xs text-text-tertiary font-caption font-data">3 hours ago</span>
+                            </div>
+                            <p class="text-sm text-text-secondary">Temporary network latency detected and automatically resolved.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnostic Tools -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Connection Test -->
+            <div class="card-elevated animate-scale-in interactive" style="animation-delay: 450ms;">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-semibold">Connection Test</h3>
+                        <p class="text-xs text-text-secondary font-caption">Network Diagnostics</p>
+                    </div>
+                </div>
+                <p class="text-sm text-text-secondary mb-4">Test connectivity to all sensors and API endpoints.</p>
+                <button class="w-full btn-primary py-2 text-sm font-medium">
+                    Run Test
+                </button>
+            </div>
+
+            <!-- Data Refresh -->
+            <div class="card-elevated animate-scale-in interactive" style="animation-delay: 500ms;">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-secondary/20 to-warning/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-semibold">Force Refresh</h3>
+                        <p class="text-xs text-text-secondary font-caption">Manual Data Sync</p>
+                    </div>
+                </div>
+                <p class="text-sm text-text-secondary mb-4">Manually trigger data refresh from all sensors.</p>
+                <button class="w-full btn-secondary py-2 text-sm font-medium">
+                    Refresh Now
+                </button>
+            </div>
+
+            <!-- System Logs -->
+            <div class="card-elevated animate-scale-in interactive" style="animation-delay: 550ms;">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-semibold">System Logs</h3>
+                        <p class="text-xs text-text-secondary font-caption">Activity History</p>
+                    </div>
+                </div>
+                <p class="text-sm text-text-secondary mb-4">View detailed system logs and activity history.</p>
+                <button class="w-full btn-glass py-2 text-sm font-medium">
+                    View Logs
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="glass rounded-xl p-6 text-center animate-fade-in" style="animation-delay: 600ms;">
+            <p class="text-sm text-text-secondary font-caption">
+                © 2025 Weather Analytics Dashboard. IoT Environmental Monitoring System.
+            </p>
+            <p class="text-xs text-text-tertiary mt-2 font-caption">
+                System Status: <span class="text-success font-medium">Operational</span> | Last Updated: <span class="font-data">Dec 6, 2025 02:19 AM IST</span>
+            </p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Configuration
+        const REFRESH_INTERVAL = 30000; // 30 seconds
+        let refreshTimer = null;
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeSystemStatus();
+            setupEventListeners();
+            startAutoRefresh();
+            updateTimestamps();
+        });
+
+        // Initialize System Status
+        function initializeSystemStatus() {
+            updateHealthMetrics();
+            updateDeviceStatus();
+            updateNetworkStatus();
+            simulateDataTransmission();
+        }
+
+        // Update Health Metrics
+        function updateHealthMetrics() {
+            const healthScore = (97 + Math.random() * 2).toFixed(1);
+            document.getElementById('healthScore').textContent = `${healthScore}%`;
+            
+            const activeDevices = 3;
+            document.getElementById('activeDevices').textContent = `${activeDevices} / 3`;
+            
+            updateNetworkLatency();
+        }
+
+        // Update Network Latency
+        function updateNetworkLatency() {
+            const latency = Math.floor(35 + Math.random() * 20);
+            document.getElementById('networkLatency').textContent = `Latency: ${latency}ms`;
+        }
+
+        // Update Device Status
+        function updateDeviceStatus() {
+            // Simulate real-time device updates
+            const devices = document.querySelectorAll('.card-elevated.status-live');
+            devices.forEach((device, index) => {
+                const lastComm = device.querySelector('.py-2:nth-child(3) .font-data');
+                if (lastComm) {
+                    const seconds = Math.floor(10 + Math.random() * 40);
+                    lastComm.textContent = `${seconds} seconds ago`;
+                }
+            });
+        }
+
+        // Update Network Status
+        function updateNetworkStatus() {
+            const statusElement = document.getElementById('networkStatus');
+            const isConnected = Math.random() > 0.05; // 95% uptime simulation
+            
+            if (isConnected) {
+                statusElement.textContent = 'Connected';
+                statusElement.classList.remove('text-error');
+                statusElement.classList.add('text-success');
+            } else {
+                statusElement.textContent = 'Reconnecting...';
+                statusElement.classList.remove('text-success');
+                statusElement.classList.add('text-error');
+            }
+        }
+
+        // Simulate Data Transmission
+        function simulateDataTransmission() {
+            // Simulate real-time data flow visualization
+            const transmissionRate = (2.8 + Math.random() * 0.8).toFixed(1);
+            const rateElements = document.querySelectorAll('.glass.rounded-lg');
+            
+            // Update transmission rate display if element exists
+            if (rateElements.length > 0) {
+                const rateElement = rateElements[0].querySelector('.font-data.font-semibold');
+                if (rateElement) {
+                    rateElement.textContent = `${transmissionRate} KB/s`;
+                }
+            }
+        }
+
+        // Update Timestamps
+        function updateTimestamps() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            
+            // Update all timestamp elements
+            const timestampElements = document.querySelectorAll('.font-data');
+            timestampElements.forEach(element => {
+                if (element.textContent.includes('ago')) {
+                    // Keep relative timestamps
+                    return;
+                }
+            });
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            // Refresh Devices Button
+            const refreshBtn = document.getElementById('refreshDevices');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => {
+                    refreshBtn.classList.add('animate-spin');
+                    updateDeviceStatus();
+                    updateHealthMetrics();
+                    
+                    setTimeout(() => {
+                        refreshBtn.classList.remove('animate-spin');
+                    }, 1000);
+                });
+            }
+
+            // Interactive Cards
+            const interactiveCards = document.querySelectorAll('.interactive');
+            interactiveCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'scale(1)';
+                });
+            });
+
+            // Device Settings Buttons
+            const settingsButtons = document.querySelectorAll('.card-elevated button');
+            settingsButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const deviceName = e.target.closest('.card-elevated').querySelector('h3').textContent;
+                    console.log(`Opening settings for ${deviceName}`);
+                    // Add settings modal logic here
+                });
+            });
+
+            // Diagnostic Tool Buttons
+            const diagnosticButtons = document.querySelectorAll('.card-elevated.interactive button');
+            diagnosticButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const toolName = e.target.closest('.card-elevated').querySelector('h3').textContent;
+                    console.log(`Executing ${toolName}`);
+                    
+                    // Simulate tool execution
+                    button.disabled = true;
+                    button.textContent = 'Processing...';
+                    
+                    setTimeout(() => {
+                        button.disabled = false;
+                        button.textContent = button.textContent.replace('Processing...', 'Complete');
+                        
+                        setTimeout(() => {
+                            button.textContent = button.textContent.replace('Complete', 'Run Test');
+                        }, 2000);
+                    }, 2000);
+                });
+            });
+        }
+
+        // Start Auto Refresh
+        function startAutoRefresh() {
+            refreshTimer = setInterval(() => {
+                updateHealthMetrics();
+                updateDeviceStatus();
+                updateNetworkStatus();
+                simulateDataTransmission();
+                updateTimestamps();
+            }, REFRESH_INTERVAL);
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (refreshTimer) clearInterval(refreshTimer);
+        });
+
+        // Visibility Change Handler
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (refreshTimer) clearInterval(refreshTimer);
+            } else {
+                startAutoRefresh();
+                updateHealthMetrics();
+                updateDeviceStatus();
+            }
+        });
+
+        // Add CSS animation for spin
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+            .animate-spin {
+                animation: spin 1s linear infinite;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>

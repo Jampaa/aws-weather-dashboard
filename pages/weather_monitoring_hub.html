@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Real-time weather monitoring dashboard with comprehensive IoT sensor data visualization and meteorological insights">
+    <title>Weather Monitoring Hub - Real-time Environmental Dashboard</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fweatheran9927back.builtwithrocket.new&_be=https%3A%2F%2Fapplication.rocket.new&_v=0.1.10"></script>
+  <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.1"></script>
+  </head>
+<body class="min-h-screen">
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        
+        <!-- Header Section -->
+        <header class="glass-elevated rounded-xl p-6 mb-6 animate-fade-in">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <!-- Logo and Title -->
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-lg bg-gradient-accent flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-background" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl lg:text-3xl font-heading font-bold gradient-text">Weather Analytics Dashboard</h1>
+                        <p class="text-text-secondary text-sm font-caption">Real-time Environmental Monitoring</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <nav class="flex flex-wrap gap-3" role="navigation" aria-label="Main navigation">
+                    <a href="weather_monitoring_hub.html" class="btn-glass px-4 py-2 text-sm font-medium border-b-2 border-primary" aria-current="page">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+                        </svg>
+                        Live Hub
+                    </a>
+                    <a href="historical_analytics.html" class="btn-glass px-4 py-2 text-sm font-medium hover:border-b-2 hover:border-accent transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Analytics
+                    </a>
+                    <a href="system_status_monitor.html" class="btn-glass px-4 py-2 text-sm font-medium hover:border-b-2 hover:border-accent transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        System Status
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Control Bar -->
+        <div class="glass rounded-xl p-4 mb-6 animate-slide-up" style="animation-delay: 100ms;">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <!-- Location Display -->
+                <div class="flex items-center gap-3" id="locationDisplay">
+                    <svg class="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm font-caption text-text-secondary">Location</p>
+                        <p class="font-medium font-data" id="locationText">Detecting location...</p>
+                    </div>
+                </div>
+
+                <!-- Data Status Indicator -->
+                <div class="flex items-center gap-3" id="dataStatus">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-success animate-pulse" id="statusDot"></div>
+                        <span class="text-sm font-medium" id="statusText">Live Data</span>
+                    </div>
+                    <div class="h-6 w-px bg-border"></div>
+                    <div class="text-sm text-text-secondary font-data" id="lastUpdate">Updated: --:--</div>
+                </div>
+
+                <!-- Time Filter Controls -->
+                <div class="flex gap-2" role="group" aria-label="Time filter controls">
+                    <button class="btn-glass px-4 py-2 text-sm font-medium border-2 border-primary time-filter active" data-filter="today" aria-pressed="true">
+                        Today
+                    </button>
+                    <button class="btn-glass px-4 py-2 text-sm font-medium time-filter" data-filter="24hours" aria-pressed="false">
+                        24 Hours
+                    </button>
+                    <button class="btn-glass px-4 py-2 text-sm font-medium time-filter" data-filter="all" aria-pressed="false">
+                        All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <!-- Temperature Card -->
+            <div class="metric-card status-live animate-scale-in interactive" style="animation-delay: 150ms;" id="tempCard">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="metric-label">Temperature</p>
+                        <p class="metric-value" id="tempValue">
+                            <span class="shimmer">--</span>°C
+                        </p>
+                        <p class="text-xs text-text-tertiary mt-1 font-caption" id="tempTrend">Loading...</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Humidity Card -->
+            <div class="metric-card status-live animate-scale-in interactive" style="animation-delay: 200ms;" id="humidityCard">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="metric-label">Humidity</p>
+                        <p class="metric-value" id="humidityValue">
+                            <span class="shimmer">--</span>%
+                        </p>
+                        <p class="text-xs text-text-tertiary mt-1 font-caption" id="humidityTrend">Loading...</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-secondary/20 to-warning/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pressure Card -->
+            <div class="metric-card status-live animate-scale-in interactive" style="animation-delay: 250ms;" id="pressureCard">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="metric-label">Pressure</p>
+                        <p class="metric-value text-2xl" id="pressureValue">
+                            <span class="shimmer">----</span> hPa
+                        </p>
+                        <p class="text-xs text-text-tertiary mt-1 font-caption" id="pressureTrend">Loading...</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Light Intensity Card -->
+            <div class="metric-card status-live animate-scale-in interactive" style="animation-delay: 300ms;" id="luxCard">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <p class="metric-label">Light Intensity</p>
+                        <p class="metric-value text-2xl" id="luxValue">
+                            <span class="shimmer">----</span> lux
+                        </p>
+                        <p class="text-xs text-text-tertiary mt-1 font-caption" id="luxTrend">Loading...</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-warning/20 to-secondary/20 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Temperature Trend Chart -->
+            <div class="card-elevated animate-slide-up" style="animation-delay: 350ms;">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-heading font-semibold">Temperature Trend</h2>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-primary"></div>
+                        <span class="text-sm text-text-secondary font-caption">Real-time</span>
+                    </div>
+                </div>
+                <div class="relative h-64 lg:h-80">
+                    <canvas id="temperatureChart" role="img" aria-label="Temperature trend line chart showing real-time temperature variations"></canvas>
+                </div>
+            </div>
+
+            <!-- Light Intensity Chart -->
+            <div class="card-elevated animate-slide-up" style="animation-delay: 400ms;">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-heading font-semibold">Light Intensity Analytics</h2>
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full bg-warning"></div>
+                        <span class="text-sm text-text-secondary font-caption">Lux Measurements</span>
+                    </div>
+                </div>
+                <div class="relative h-64 lg:h-80">
+                    <canvas id="luxChart" role="img" aria-label="Light intensity area chart displaying lux measurements over time"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="glass rounded-xl p-6 mt-6 text-center animate-fade-in" style="animation-delay: 450ms;">
+            <p class="text-sm text-text-secondary font-caption">
+                © 2025 Weather Analytics Dashboard. Real-time IoT Environmental Monitoring System.
+            </p>
+            <p class="text-xs text-text-tertiary mt-2 font-caption">
+                Device: weather-node-1 | Timezone: IST | Auto-refresh: 60s
+            </p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Configuration
+        const API_ENDPOINT = 'https://your-api-gateway.ap-south-1.amazonaws.com/weather-data';
+        const DEVICE_ID = 'weather-node-1';
+        const REFRESH_INTERVAL = 60000; // 60 seconds
+        const GEOCODING_API = 'https://api.bigdatacloud.net/data/reverse-geocode-client';
+
+        // State Management
+        let weatherData = [];
+        let currentFilter = 'today';
+        let temperatureChart = null;
+        let luxChart = null;
+        let refreshTimer = null;
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+            detectLocation();
+            fetchWeatherData();
+            setupEventListeners();
+            startAutoRefresh();
+        });
+
+        // Location Detection
+        async function detectLocation() {
+            const locationText = document.getElementById('locationText');
+            
+            if ('geolocation' in navigator) {
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject);
+                    });
+                    
+                    const { latitude, longitude } = position.coords;
+                    const response = await fetch(`${GEOCODING_API}?latitude=${latitude}&longitude=${longitude}`);
+                    const data = await response.json();
+                    
+                    locationText.textContent = `${data.city || data.locality}, ${data.countryName}`;
+                } catch (error) {
+                    console.error('Location detection failed:', error);
+                    locationText.textContent = 'Location unavailable';
+                }
+            } else {
+                locationText.textContent = 'Geolocation not supported';
+            }
+        }
+
+        // Fetch Weather Data
+        async function fetchWeatherData() {
+            try {
+                updateDataStatus('loading');
+                
+                // Mock data for demonstration (replace with actual API call)
+                const mockData = generateMockData();
+                weatherData = mockData;
+                
+                // Uncomment for actual API integration
+                // const response = await fetch(`${API_ENDPOINT}?device=${DEVICE_ID}`);
+                // if (!response.ok) throw new Error('API request failed');
+                // weatherData = await response.json();
+                
+                updateMetrics();
+                updateCharts();
+                updateDataStatus('live');
+                updateLastUpdateTime();
+            } catch (error) {
+                console.error('Data fetch error:', error);
+                updateDataStatus('error');
+            }
+        }
+
+        // Generate Mock Data
+        function generateMockData() {
+            const now = new Date();
+            const data = [];
+            
+            for (let i = 0; i < 24; i++) {
+                const timestamp = new Date(now - i * 3600000);
+                data.push({
+                    timestamp: timestamp.toISOString(),
+                    temperature: (22 + Math.random() * 8).toFixed(1),
+                    humidity: (45 + Math.random() * 30).toFixed(1),
+                    pressure: (1010 + Math.random() * 20).toFixed(1),
+                    lux: Math.floor(200 + Math.random() * 800)
+                });
+            }
+            
+            return data.reverse();
+        }
+
+        // Update Metrics
+        function updateMetrics() {
+            if (weatherData.length === 0) return;
+            
+            const filteredData = filterDataByTimeRange(weatherData);
+            const latest = filteredData[filteredData.length - 1];
+            
+            // Temperature
+            document.getElementById('tempValue').innerHTML = `${latest.temperature}°C`;
+            document.getElementById('tempTrend').textContent = getTrend(filteredData, 'temperature');
+            
+            // Humidity
+            document.getElementById('humidityValue').innerHTML = `${latest.humidity}%`;
+            document.getElementById('humidityTrend').textContent = getTrend(filteredData, 'humidity');
+            
+            // Pressure
+            document.getElementById('pressureValue').innerHTML = `${latest.pressure} hPa`;
+            document.getElementById('pressureTrend').textContent = getTrend(filteredData, 'pressure');
+            
+            // Light Intensity
+            document.getElementById('luxValue').innerHTML = `${latest.lux} lux`;
+            document.getElementById('luxTrend').textContent = getTrend(filteredData, 'lux');
+            
+            // Update card status
+            updateCardStatus(latest);
+        }
+
+        // Get Trend
+        function getTrend(data, metric) {
+            if (data.length < 2) return 'Insufficient data';
+            
+            const current = parseFloat(data[data.length - 1][metric]);
+            const previous = parseFloat(data[data.length - 2][metric]);
+            const diff = current - previous;
+            
+            if (Math.abs(diff) < 0.1) return 'Stable';
+            return diff > 0 ? `↑ ${Math.abs(diff).toFixed(1)}` : `↓ ${Math.abs(diff).toFixed(1)}`;
+        }
+
+        // Update Card Status
+        function updateCardStatus(latest) {
+            const cards = ['tempCard', 'humidityCard', 'pressureCard', 'luxCard'];
+            const timestamp = new Date(latest.timestamp);
+            const now = new Date();
+            const ageMinutes = (now - timestamp) / 60000;
+            
+            cards.forEach(cardId => {
+                const card = document.getElementById(cardId);
+                card.classList.remove('status-live', 'status-warning', 'status-error');
+                
+                if (ageMinutes < 2) {
+                    card.classList.add('status-live');
+                } else if (ageMinutes < 10) {
+                    card.classList.add('status-warning');
+                } else {
+                    card.classList.add('status-error');
+                }
+            });
+        }
+
+        // Filter Data by Time Range
+        function filterDataByTimeRange(data) {
+            const now = new Date();
+            
+            switch (currentFilter) {
+                case 'today':
+                    const todayStart = new Date(now.setHours(0, 0, 0, 0));
+                    return data.filter(d => new Date(d.timestamp) >= todayStart);
+                case '24hours':
+                    const yesterday = new Date(now - 24 * 3600000);
+                    return data.filter(d => new Date(d.timestamp) >= yesterday);
+                case 'all':
+                default:
+                    return data;
+            }
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+            const luxCtx = document.getElementById('luxChart').getContext('2d');
+            
+            // Temperature Chart
+            temperatureChart = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: [],
+                        borderColor: '#00ffe1',
+                        backgroundColor: 'rgba(0, 255, 225, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#00ffe1',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 32, 39, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#00ffe1',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Light Intensity Chart
+            luxChart = new Chart(luxCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Light Intensity (lux)',
+                        data: [],
+                        borderColor: '#ffaa00',
+                        backgroundColor: 'rgba(255, 170, 0, 0.2)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#ffaa00',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 32, 39, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#ffaa00',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                font: {
+                                    family: 'JetBrains Mono'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update Charts
+        function updateCharts() {
+            const filteredData = filterDataByTimeRange(weatherData);
+            
+            const labels = filteredData.map(d => {
+                const date = new Date(d.timestamp);
+                return date.toLocaleTimeString('en-IN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+            });
+            
+            const tempData = filteredData.map(d => parseFloat(d.temperature));
+            const luxData = filteredData.map(d => parseInt(d.lux));
+            
+            // Update Temperature Chart
+            temperatureChart.data.labels = labels;
+            temperatureChart.data.datasets[0].data = tempData;
+            temperatureChart.update('none');
+            
+            // Update Lux Chart
+            luxChart.data.labels = labels;
+            luxChart.data.datasets[0].data = luxData;
+            luxChart.update('none');
+        }
+
+        // Update Data Status
+        function updateDataStatus(status) {
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            statusDot.classList.remove('bg-success', 'bg-warning', 'bg-error', 'animate-pulse');
+            
+            switch (status) {
+                case 'live':
+                    statusDot.classList.add('bg-success', 'animate-pulse');
+                    statusText.textContent = 'Live Data';
+                    break;
+                case 'loading':
+                    statusDot.classList.add('bg-warning', 'animate-pulse');
+                    statusText.textContent = 'Updating...';
+                    break;
+                case 'error':
+                    statusDot.classList.add('bg-error');
+                    statusText.textContent = 'Connection Error';
+                    break;
+            }
+        }
+
+        // Update Last Update Time
+        function updateLastUpdateTime() {
+            const lastUpdate = document.getElementById('lastUpdate');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            });
+            lastUpdate.textContent = `Updated: ${timeString}`;
+        }
+
+        // Setup Event Listeners
+        function setupEventListeners() {
+            const filterButtons = document.querySelectorAll('.time-filter');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('border-2', 'border-primary', 'active');
+                        btn.setAttribute('aria-pressed', 'false');
+                    });
+                    
+                    button.classList.add('border-2', 'border-primary', 'active');
+                    button.setAttribute('aria-pressed', 'true');
+                    currentFilter = button.dataset.filter;
+                    
+                    updateMetrics();
+                    updateCharts();
+                });
+            });
+        }
+
+        // Start Auto Refresh
+        function startAutoRefresh() {
+            refreshTimer = setInterval(() => {
+                fetchWeatherData();
+            }, REFRESH_INTERVAL);
+        }
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (refreshTimer) clearInterval(refreshTimer);
+        });
+    </script>
+<script id="dhws-dataInjector" src="../public/dhws-data-injector.js"></script>
+</body>
+</html>
