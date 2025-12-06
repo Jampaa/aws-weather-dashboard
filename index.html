@@ -9,12 +9,13 @@
 body { font-family: Arial; background: #1f3b73; color: #fff; text-align: center; }
 .container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 15px;}
 .card { background:#ffffff22; padding:15px; border-radius:12px; width:130px; }
-canvas { background: #ffffff11; border-radius: 10px; }
+canvas { background: #ffffff11; border-radius: 10px; margin: 10px 0; }
 button {
   background:#00aaff; color:white; border:none; padding:8px 12px;
   margin:4px; border-radius:6px; cursor:pointer;
 }
 button:hover { background:#0099dd; }
+button.active { background:#00ff88; }
 </style>
 </head>
 
@@ -36,7 +37,13 @@ button:hover { background:#0099dd; }
   <div class="card">💡 Lux: <span id="lux">--</span></div>
 </div>
 
-<canvas id="weatherChart" width="350" height="150"></canvas>
+<!-- Temperature Chart -->
+<h3 style="margin: 20px 0 5px 0;">Temperature</h3>
+<canvas id="tempChart" width="350" height="150"></canvas>
+
+<!-- Lux Chart -->
+<h3 style="margin: 20px 0 5px 0;">Lux (Light)</h3>
+<canvas id="luxChart" width="350" height="150"></canvas>
 
 <script>
 const API_URL = "https://7uxbhp38yk.execute-api.ap-south-1.amazonaws.com/v1/weather";
@@ -47,17 +54,20 @@ const presEl = document.getElementById("pres");
 const luxEl = document.getElementById("lux");
 const statusEl = document.getElementById("status");
 
-let chart;
+let tempChart, luxChart;
 let allData = [];
 
 // ---------- Helpers for time handling ----------
 
-// gap in minutes between now (UTC) and given Date
 function timeGapMinutes(t){ return (Date.now() - t.getTime()) / 60000; }
-// gap in hours between now (UTC) and given Date
 function timeGapHours(t){ return (Date.now() - t.getTime()) / 3600000; }
 
-// convert a UTC Date to IST date parts (Y-M-D)
+function formatTimeGap(minutes) {
+  if (minutes < 60) return `${Math.round(minutes)} min ago`;
+  if (minutes < 1440) return `${Math.round(minutes/60)} hrs ago`;
+  return `${Math.round(minutes/1440)} days ago`;
+}
+
 function toISTDateParts(dateUtc) {
   const ist = new Date(dateUtc.getTime() + 5.5 * 3600 * 1000);
   return {
@@ -82,7 +92,8 @@ async function fetchWeather() {
     updateView("all");
   } catch (e) {
     console.error("❌ Error fetching:", e);
-    showNoData();
+    statusEl.innerText = "❌ API Error";
+    statusEl.style.color = "#ff4444";
   }
 }
 
@@ -91,39 +102,47 @@ function updateView(viewType) {
     d.device === "weather-node-1" && d.temperature !== null
   );
 
-  // keep timestamps as proper Date objects (UTC internally)
   filtered = filtered.map(d => ({
     ...d,
-    ts: new Date(d.timestamp) // this parses "2025-12-05T16:46:22Z" as UTC
+    ts: new Date(d.timestamp)
   })).sort((a,b)=> a.ts - b.ts);
 
   const latest = filtered[filtered.length - 1];
 
-  if (!latest || timeGapMinutes(latest.ts) > 10) {
-    showNoData();
+  if (!latest) {
+    statusEl.innerText = "⚠ No valid data";
+    statusEl.style.color = "yellow";
+    tempEl.innerText = humEl.innerText = presEl.innerText = luxEl.innerText = "0";
+    updateCharts([], []);
     return;
   }
 
-  statusEl.innerText = "Live ✔";
-  statusEl.style.color = "#00ff88";
+  // Show live status OR time since last update
+  const gap = timeGapMinutes(latest.ts);
+  if (gap <= 10) {
+    statusEl.innerText = "Live ✔";
+    statusEl.style.color = "#00ff88";
+  } else {
+    statusEl.innerText = `Last update: ${formatTimeGap(gap)}`;
+    statusEl.style.color = "#ffa500";
+  }
 
+  // Always show latest readings
   tempEl.innerText = latest.temperature.toFixed(1);
-  humEl.innerText = latest.humidity.toFixed(1);
-  presEl.innerText = latest.pressure.toFixed(1);
-  luxEl.innerText = latest.lux.toFixed(1);
+  humEl.innerText = latest.humidity ? latest.humidity.toFixed(1) : "N/A";
+  presEl.innerText = latest.pressure ? latest.pressure.toFixed(1) : "N/A";
+  luxEl.innerText = latest.lux ? latest.lux.toFixed(1) : "N/A";
 
-  // filters
+  // Apply filters
+  let chartData = filtered;
   if (viewType === "today") {
     const nowUtc = new Date();
-    filtered = filtered.filter(d => isSameISTDay(d.ts, nowUtc));
+    chartData = filtered.filter(d => isSameISTDay(d.ts, nowUtc));
+  } else if (viewType === "24h") {
+    chartData = filtered.filter(d => timeGapHours(d.ts) <= 24);
   }
 
-  if (viewType === "24h") {
-    filtered = filtered.filter(d => timeGapHours(d.ts) <= 24);
-  }
-
-  // labels in IST using toLocaleString with explicit timeZone
-  const labels = filtered.map(d =>
+  const labels = chartData.map(d =>
     d.ts.toLocaleString("en-IN", {
       timeZone: "Asia/Kolkata",
       hour12: true,
@@ -134,53 +153,77 @@ function updateView(viewType) {
     })
   );
 
-  const temps = filtered.map(d => d.temperature);
-
-  drawChart(labels, temps);
+  updateCharts(labels, chartData);
 }
 
-function showNoData() {
-  statusEl.innerText = "⚠ No Data Received";
-  statusEl.style.color = "yellow";
-  tempEl.innerText = humEl.innerText = presEl.innerText = luxEl.innerText = "0";
-  drawChart([], []);
-}
+function updateCharts(labels, data) {
+  const temps = data.map(d => d.temperature);
+  const luxes = data.map(d => d.lux || 0);
 
-// ---------- Chart ----------
-
-function drawChart(labels, values) {
-  const ctx = document.getElementById("weatherChart");
-  if (!chart) {
-    chart = new Chart(ctx,{
-      type:"line",
-      data:{ labels, datasets:[{
-        label:"Temp °C", data:values,
-        borderWidth:2, borderColor:"#00ffe1",
-        tension:0.3
+  // Update Temp Chart
+  if (tempChart) {
+    tempChart.data.labels = labels;
+    tempChart.data.datasets[0].data = temps;
+    tempChart.update();
+  } else {
+    const ctxTemp = document.getElementById("tempChart");
+    tempChart = new Chart(ctxTemp, {
+      type: "line",
+      data: { labels, datasets: [{
+        label: "Temp °C", data: temps,
+        borderWidth: 2, borderColor: "#00ffe1",
+        backgroundColor: "#00ffe133",
+        tension: 0.3, fill: true
       }]},
-      options:{
-        plugins:{ legend:{ labels:{ color:"#fff" }}},
-        scales:{
-          x:{ ticks:{ color:"#fff" }},
-          y:{ ticks:{ color:"#fff" }}
+      options: {
+        plugins: { legend: { labels: { color: "#fff" }}},
+        scales: {
+          x: { ticks: { color: "#fff", maxRotation: 45 }},
+          y: { ticks: { color: "#fff" }}
         }
       }
     });
+  }
+
+  // Update Lux Chart
+  if (luxChart) {
+    luxChart.data.labels = labels;
+    luxChart.data.datasets[0].data = luxes;
+    luxChart.update();
   } else {
-    chart.data.labels = labels;
-    chart.data.datasets[0].data = values;
-    chart.update();
+    const ctxLux = document.getElementById("luxChart");
+    luxChart = new Chart(ctxLux, {
+      type: "line",
+      data: { labels, datasets: [{
+        label: "Lux", data: luxes,
+        borderWidth: 2, borderColor: "#ffaa00",
+        backgroundColor: "#ffaa0033",
+        tension: 0.3, fill: true
+      }]},
+      options: {
+        plugins: { legend: { labels: { color: "#fff" }}},
+        scales: {
+          x: { ticks: { color: "#fff", maxRotation: 45 }},
+          y: { ticks: { color: "#fff" }}
+        }
+      }
+    });
   }
 }
 
 // ---------- Buttons + auto refresh ----------
 
-document.getElementById("btnToday").onclick = ()=>updateView("today");
-document.getElementById("btn24").onclick = ()=>updateView("24h");
-document.getElementById("btnAll").onclick = ()=>updateView("all");
+function setActiveButton(id) {
+  document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+document.getElementById("btnToday").onclick = () => { updateView("today"); setActiveButton("btnToday"); };
+document.getElementById("btn24").onclick = () => { updateView("24h"); setActiveButton("btn24"); };
+document.getElementById("btnAll").onclick = () => { updateView("all"); setActiveButton("btnAll"); };
 
 fetchWeather();
-setInterval(fetchWeather,60000);
+setInterval(fetchWeather, 60000);
 </script>
 
 </body>
