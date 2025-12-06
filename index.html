@@ -2,48 +2,145 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Weather Dashboard</title>
+<title>🌤️ Weather Dashboard - IST</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-body { font-family: Arial; background: #1f3b73; color: #fff; text-align: center; }
-.container { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin: 15px;}
-.card { background:#ffffff22; padding:15px; border-radius:12px; width:130px; }
-canvas { background: #ffffff11; border-radius: 10px; margin: 10px 0; }
-button {
-  background:#00aaff; color:white; border:none; padding:8px 12px;
-  margin:4px; border-radius:6px; cursor:pointer;
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: 'Poppins', sans-serif; 
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); 
+  color: #fff; 
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-button:hover { background:#0099dd; }
-button.active { background:#00ff88; }
+.header {
+  text-align: center; padding: 30px 20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.header h1 {
+  font-size: 2.5em; font-weight: 700; margin-bottom: 10px;
+  background: linear-gradient(45deg, #00f5ff, #ff00ff); 
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(0,245,255,0.5);
+}
+.location {
+  font-size: 1.2em; opacity: 0.9; margin-bottom: 15px;
+}
+.status {
+  font-size: 1.1em; font-weight: 600; padding: 12px 24px;
+  border-radius: 50px; background: rgba(255,165,0,0.2);
+  border: 2px solid rgba(255,165,0,0.4);
+  display: inline-block; margin: 10px 0;
+  box-shadow: 0 8px 32px rgba(255,165,0,0.2);
+}
+.status.live { background: rgba(0,255,136,0.2); border-color: rgba(0,255,136,0.4); }
+.status.stale { background: rgba(255,165,0,0.2); border-color: rgba(255,165,0,0.4); }
+.status.error { background: rgba(255,68,68,0.2); border-color: rgba(255,68,68,0.4); }
+
+.btn-container {
+  display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; 
+  padding: 25px 0; background: rgba(255,255,255,0.05);
+}
+button {
+  background: linear-gradient(45deg, #00aaff, #0088cc); 
+  color: white; border: none; padding: 12px 24px;
+  font-size: 1em; font-weight: 600; border-radius: 25px; 
+  cursor: pointer; transition: all 0.3s ease;
+  box-shadow: 0 8px 25px rgba(0,170,255,0.3);
+  position: relative; overflow: hidden;
+}
+button::before {
+  content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+button:hover::before { left: 100%; }
+button:hover {
+  transform: translateY(-3px); box-shadow: 0 12px 35px rgba(0,170,255,0.5);
+  background: linear-gradient(45deg, #00ff88, #00cc66);
+}
+button.active {
+  background: linear-gradient(45deg, #00ff88, #00cc66);
+  box-shadow: 0 8px 25px rgba(0,255,136,0.4);
+  transform: scale(1.05);
+}
+
+.container {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 20px; max-width: 600px; margin: 30px auto; padding: 0 20px;
+}
+.card {
+  background: rgba(255,255,255,0.15); backdrop-filter: blur(15px);
+  padding: 25px 15px; border-radius: 20px; 
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: all 0.3s ease; position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, #00ffe1, #ffaa00, #ff6b9d);
+}
+.card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+.card span {
+  font-size: 1.8em; font-weight: 700; color: #00ffe1;
+  display: block; margin-top: 8px;
+}
+
+.chart-section {
+  max-width: 800px; margin: 40px auto; padding: 0 20px;
+}
+.chart-title {
+  font-size: 1.4em; font-weight: 600; margin: 25px 0 10px 0;
+  background: linear-gradient(45deg, #00ffe1, #ffaa00); 
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+canvas { 
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);
+  border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+canvas:hover { box-shadow: 0 25px 50px rgba(0,0,0,0.4); }
+
+@media (max-width: 768px) {
+  .header h1 { font-size: 2em; }
+  .container { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+  canvas { width: 100% !important; height: 200px !important; }
+}
 </style>
 </head>
 
 <body>
-<h2>📡 Live Weather Dashboard — IST Time</h2>
+<div class="header">
+  <h1>🌤️ Weather Dashboard</h1>
+  <div class="location" id="location">📍 Bangalore, Karnataka, India</div>
+  <p class="status" id="status">Checking...</p>
+</div>
 
-<p id="status" style="font-weight:bold; color:#ffa500;">Checking...</p>
-
-<div style="margin-bottom:10px;">
-  <button id="btnToday">Today</button>
-  <button id="btn24">Last 24 Hours</button>
-  <button id="btnAll">All Data</button>
+<div class="btn-container">
+  <button id="btnToday" class="active">📅 Today</button>
+  <button id="btn24">⏰ 24 Hours</button>
+  <button id="btnAll">📊 All Data</button>
 </div>
 
 <div class="container">
-  <div class="card">🌡 Temp: <span id="temp">--</span>°C</div>
-  <div class="card">💧 Hum: <span id="hum">--</span>%</div>
-  <div class="card">⛈ Pres: <span id="pres">--</span></div>
-  <div class="card">💡 Lux: <span id="lux">--</span></div>
+  <div class="card">🌡️ <span id="temp">--</span><small>°C</small></div>
+  <div class="card">💧 <span id="hum">--</span><small>%</small></div>
+  <div class="card">⛈️ <span id="pres">--</span><small>hPa</small></div>
+  <div class="card">💡 <span id="lux">--</span><small>lux</small></div>
 </div>
 
-<!-- Temperature Chart -->
-<h3 style="margin: 20px 0 5px 0;">Temperature</h3>
-<canvas id="tempChart" width="350" height="150"></canvas>
-
-<!-- Lux Chart -->
-<h3 style="margin: 20px 0 5px 0;">Lux (Light)</h3>
-<canvas id="luxChart" width="350" height="150"></canvas>
+<div class="chart-section">
+  <h3 class="chart-title">🌡️ Temperature Trend</h3>
+  <canvas id="tempChart"></canvas>
+  
+  <h3 class="chart-title">💡 Light Intensity (Lux)</h3>
+  <canvas id="luxChart"></canvas>
+</div>
 
 <script>
 const API_URL = "https://7uxbhp38yk.execute-api.ap-south-1.amazonaws.com/v1/weather";
@@ -57,83 +154,68 @@ const statusEl = document.getElementById("status");
 let tempChart, luxChart;
 let allData = [];
 
-// ---------- Helpers for time handling ----------
+// Get location
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(pos => {
+    fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${pos.coords.latitude}&longitude=${pos.coords.longitude}&localityLanguage=en`)
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById("location").textContent = 
+          `📍 ${data.city || 'Bangalore'}, ${data.countryName}`;
+      })
+      .catch(() => {}); 
+  });
+}
 
+// ---------- Time helpers (unchanged) ----------
 function timeGapMinutes(t){ return (Date.now() - t.getTime()) / 60000; }
 function timeGapHours(t){ return (Date.now() - t.getTime()) / 3600000; }
-
 function formatTimeGap(minutes) {
-  if (minutes < 60) return `${Math.round(minutes)} min ago`;
-  if (minutes < 1440) return `${Math.round(minutes/60)} hrs ago`;
-  return `${Math.round(minutes/1440)} days ago`;
+  if (minutes < 60) return `${Math.round(minutes)}m ago`;
+  if (minutes < 1440) return `${Math.round(minutes/60)}h ago`;
+  return `${Math.round(minutes/1440)}d ago`;
 }
-
 function toISTDateParts(dateUtc) {
   const ist = new Date(dateUtc.getTime() + 5.5 * 3600 * 1000);
-  return {
-    y: ist.getUTCFullYear(),
-    m: ist.getUTCMonth(),
-    d: ist.getUTCDate()
-  };
+  return { y: ist.getUTCFullYear(), m: ist.getUTCMonth(), d: ist.getUTCDate() };
 }
-
 function isSameISTDay(d1, d2) {
-  const a = toISTDateParts(d1);
-  const b = toISTDateParts(d2);
+  const a = toISTDateParts(d1), b = toISTDateParts(d2);
   return a.y === b.y && a.m === b.m && a.d === b.d;
 }
 
-// ---------- Fetch + view update ----------
-
+// ---------- Weather functions (unchanged) ----------
 async function fetchWeather() {
   try {
     const res = await fetch(API_URL);
     allData = await res.json();
     updateView("all");
   } catch (e) {
-    console.error("❌ Error fetching:", e);
-    statusEl.innerText = "❌ API Error";
-    statusEl.style.color = "#ff4444";
+    console.error("❌ Error:", e);
+    statusEl.textContent = "❌ API Error"; statusEl.className = "status error";
   }
 }
 
 function updateView(viewType) {
-  let filtered = allData.filter(d =>
-    d.device === "weather-node-1" && d.temperature !== null
-  );
-
-  filtered = filtered.map(d => ({
-    ...d,
-    ts: new Date(d.timestamp)
-  })).sort((a,b)=> a.ts - b.ts);
-
+  let filtered = allData.filter(d => d.device === "weather-node-1" && d.temperature !== null);
+  filtered = filtered.map(d => ({ ...d, ts: new Date(d.timestamp) })).sort((a,b) => a.ts - b.ts);
   const latest = filtered[filtered.length - 1];
 
   if (!latest) {
-    statusEl.innerText = "⚠ No valid data";
-    statusEl.style.color = "yellow";
-    tempEl.innerText = humEl.innerText = presEl.innerText = luxEl.innerText = "0";
-    updateCharts([], []);
+    statusEl.textContent = "⚠ No data"; statusEl.className = "status error";
+    updateCards(0,0,0,0); updateCharts([], []);
     return;
   }
 
-  // Show live status OR time since last update
   const gap = timeGapMinutes(latest.ts);
   if (gap <= 10) {
-    statusEl.innerText = "Live ✔";
-    statusEl.style.color = "#00ff88";
+    statusEl.textContent = "🟢 Live"; statusEl.className = "status live";
   } else {
-    statusEl.innerText = `Last update: ${formatTimeGap(gap)}`;
-    statusEl.style.color = "#ffa500";
+    statusEl.textContent = `🟡 ${formatTimeGap(gap)}`; statusEl.className = "status stale";
   }
 
-  // Always show latest readings
-  tempEl.innerText = latest.temperature.toFixed(1);
-  humEl.innerText = latest.humidity ? latest.humidity.toFixed(1) : "N/A";
-  presEl.innerText = latest.pressure ? latest.pressure.toFixed(1) : "N/A";
-  luxEl.innerText = latest.lux ? latest.lux.toFixed(1) : "N/A";
+  updateCards(latest.temperature, latest.humidity, latest.pressure, latest.lux);
 
-  // Apply filters
   let chartData = filtered;
   if (viewType === "today") {
     const nowUtc = new Date();
@@ -142,77 +224,50 @@ function updateView(viewType) {
     chartData = filtered.filter(d => timeGapHours(d.ts) <= 24);
   }
 
-  const labels = chartData.map(d =>
-    d.ts.toLocaleString("en-IN", {
-      timeZone: "Asia/Kolkata",
-      hour12: true,
-      hour: "2-digit",
-      minute: "2-digit",
-      day: "2-digit",
-      month: "short"
-    })
-  );
-
+  const labels = chartData.map(d => d.ts.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata", hour12: true, hour: "2-digit", minute: "2-digit"
+  }));
   updateCharts(labels, chartData);
 }
 
-function updateCharts(labels, data) {
-  const temps = data.map(d => d.temperature);
-  const luxes = data.map(d => d.lux || 0);
-
-  // Update Temp Chart
-  if (tempChart) {
-    tempChart.data.labels = labels;
-    tempChart.data.datasets[0].data = temps;
-    tempChart.update();
-  } else {
-    const ctxTemp = document.getElementById("tempChart");
-    tempChart = new Chart(ctxTemp, {
-      type: "line",
-      data: { labels, datasets: [{
-        label: "Temp °C", data: temps,
-        borderWidth: 2, borderColor: "#00ffe1",
-        backgroundColor: "#00ffe133",
-        tension: 0.3, fill: true
-      }]},
-      options: {
-        plugins: { legend: { labels: { color: "#fff" }}},
-        scales: {
-          x: { ticks: { color: "#fff", maxRotation: 45 }},
-          y: { ticks: { color: "#fff" }}
-        }
-      }
-    });
-  }
-
-  // Update Lux Chart
-  if (luxChart) {
-    luxChart.data.labels = labels;
-    luxChart.data.datasets[0].data = luxes;
-    luxChart.update();
-  } else {
-    const ctxLux = document.getElementById("luxChart");
-    luxChart = new Chart(ctxLux, {
-      type: "line",
-      data: { labels, datasets: [{
-        label: "Lux", data: luxes,
-        borderWidth: 2, borderColor: "#ffaa00",
-        backgroundColor: "#ffaa0033",
-        tension: 0.3, fill: true
-      }]},
-      options: {
-        plugins: { legend: { labels: { color: "#fff" }}},
-        scales: {
-          x: { ticks: { color: "#fff", maxRotation: 45 }},
-          y: { ticks: { color: "#fff" }}
-        }
-      }
-    });
-  }
+function updateCards(temp, hum, pres, lux) {
+  tempEl.textContent = temp?.toFixed(1) || "--";
+  humEl.textContent = hum?.toFixed(1) || "--";
+  presEl.textContent = pres?.toFixed(1) || "--";
+  luxEl.textContent = lux?.toFixed(0) || "--";
 }
 
-// ---------- Buttons + auto refresh ----------
+function updateCharts(labels, data) {
+  const temps = data.map(d => d.temperature), luxes = data.map(d => d.lux || 0);
+  
+  // Temp chart
+  if (tempChart) {
+    tempChart.data.labels = labels; tempChart.data.datasets[0].data = temps; tempChart.update('none');
+  } else createChart('tempChart', temps, '#00ffe1', 'Temp °C');
+  
+  // Lux chart  
+  if (luxChart) {
+    luxChart.data.labels = labels; luxChart.data.datasets[0].data = luxes; luxChart.update('none');
+  } else createChart('luxChart', luxes, '#ffaa00', 'Lux');
+}
 
+function createChart(id, data, color, label) {
+  const ctx = document.getElementById(id);
+  window[id+'Chart'] = new Chart(ctx, {
+    type: 'line', data: { labels: [], datasets: [{ label, data,
+      borderWidth: 3, borderColor: color, backgroundColor: color+'33',
+      tension: 0.4, fill: true, pointRadius: 4, pointHoverRadius: 7
+    }]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#fff', font: { size: 14 } }}},
+      scales: { x: { ticks: { color: '#fff', maxRotation: 45 }}, y: { ticks: { color: '#fff' }}},
+      animation: { duration: 1000, easing: 'easeOutQuart' }
+    }
+  });
+}
+
+// Event listeners
 function setActiveButton(id) {
   document.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -225,6 +280,5 @@ document.getElementById("btnAll").onclick = () => { updateView("all"); setActive
 fetchWeather();
 setInterval(fetchWeather, 60000);
 </script>
-
 </body>
 </html>
